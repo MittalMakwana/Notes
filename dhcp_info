@@ -1,0 +1,29 @@
+DHCP uses UDP to deliver protocol messages between clients and hosts. UDP has
+two specific features that are used by DHCP:
+• UDP messages can be broadcast and delivered to every computer on a network
+segment rather than to just a single destination computer.
+• UDP messages can be transmitted with a source IP address of 0.0.0.0 if the
+source computer has not yet been assigned an IP address.
+=========
+When the relay agent receives a client message, the relay agent does the following:
+1. If the giaddr field in the message contains 0.0.0.0, the relay agent inserts the
+address of the network interface on which the message was received into the
+giaddr field.
+2. It increments the hop count.
+3. It appends any relay agent options.
+4. It forwards the message to the DHCP servers that were configured by the
+network administrator
+=====
+ The client waits 4 seconds before the first retransmission.
+It then doubles the waiting time between retransmissions, up to a maximum of 64
+seconds.
+=====
+There is no provision in DHCP for a DHCP server to respond to a DHCPDISCOVER message by saying “I can’t provide service.” So when a DHCP server is not able to provide service to a DHCP client, it simply ignores requests from that client. This can happen either because the DHCP server has no IP addresses to allocate or because it has been configured not to respond
+to some clients.
+======
+The DHCPRELEASE message is never retransmitted. Because it is an advisory message, the only harm that can come from it being lost is that the DHCP server will not free up the lease until it has expired.
+=====
+The server responds to a DHCPLEASEQUERY message with either a DHCPKNOWN or a DHCPUNKNOWN message. If the sender doesn’t receive a response, it retransmits the DHCPLEASEQUERY message, using exponential backoff to delay retransmissions
+====
+The server retransmits the DHCPFORCERENEW message, doubling the retransmission delay to provide exponential backoff until it receives a Transmitting DHCP Messages DHCPREQUEST message from the client
+====
