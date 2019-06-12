@@ -1,0 +1,50 @@
+DHCP
+The call-flow to get an IP address with DHCP is as follows: 
+    * The host sends a DHCP DISCOVER  packet with source port 68 and destination port 67 and broadcast it
+    * The DHCP server answers with a DHCP OFFER containing a list of IP address with lease time, default gateway and DNS information
+    * The host replies with a DHCP REQUEST with the request of the IP address
+    * The DHCP server confirms the address allocation with a DCHP ACK, this packet is also broadcast for that any other DHCP server is also aware that the corresponding host has received that IP address and the other servers can pull back their offer
+    * If the DHCP server is on another subnet than the host then the gateway/router in between needs to be configured as a DHCP relay agent, so when a DHCP packet is received from the host the router acting as a relay agent can unicast the packet to the DHCP server.
+* When the client gets the IP address, the client sends out gratuitous ARP in order to verify that there is no other host in the subnet with the same IP address
+
+In gratuitous ARP packet: 
+* Both source and destination IP in the packet are the IP of the host issuing the gratuitous ARP
+* The destination MAC address is the broadcast MAC address (ff:ff:ff:ff:ff:ff)
+* If the host receives a reply from Gratuitous ARP that it sent then the host is aware that the same IP address of its own is present in the network and there is an IP address conflict
+
+ARP
+* The address resolution protocol (arp) is a protocol specifically IPv4, to map IP network addresses to the hardware addresses used by a data link protocol.
+* The ARP cache is first checked for an ARP entry for our target IP
+* If the IP address to MAC address mapping is not known ARP broadcast packet is sent out.
+* ARP Request: 
+    * Sender MAC: interface:mac:address:here 
+    * Sender IP: interface.ip.goes.here 
+    * Target MAC: FF:FF:FF:FF:FF:FF (Broadcast) 
+    * Target IP: target.ip.goes.here
+* We get the ARP reply with the IP address to MAC address mapping
+
+DNS
+* Browser checks if the domain is in its cache.	
+* If not found, the browser calls OS to do the lookup.
+* OS checks if the hostname can be resolved by reference in the local host's file or its DNC cache before trying to resolve the hostname through DNS.
+* If OS does not have it cached nor can find it in the hosts file then it makes a request to the DNS server configured in the network stack. 
+
+
+TCP HANDSHAKE
+* Client chooses an initial sequence number and sends the packet to the server with the SYN bit set
+* Server receives SYN and if the server is ready:
+    * Server chooses its own initial sequence number
+    * Server sets SYN to indicate it is choosing its ISN
+    * Server copies the client sequence number increments it by one to its ACK field and adds the ACK flag to indicate it is acknowledging receipt of the first packet 
+* Client acknowledges the connection by sending a packet:
+    * Increases its own sequence number
+    * Increases the receiver acknowledgment number
+    * Sets ACK field
+
+* Data is transferred as follows:
+    * As one side sends N data bytes, it increases its SEQ by that number
+    * When the other side acknowledges receipt of that packet (or a string of packets), it sends an ACK packet with the ACK value equal to the last received sequence from the other 
+* To close the connection:
+    * The closer sends a FIN packet
+    * The other sides ACKs the FIN packet and sends its own FIN
+    * The closer acknowledges the other side's FIN with an ACK 
